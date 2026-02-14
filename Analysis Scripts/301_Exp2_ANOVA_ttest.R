@@ -1,0 +1,70 @@
+#### install the relevant R packages; you only need to do this once after you download R ####
+install.packages("psych")
+install.packages("ez")
+install.packages("psychTools")
+
+#### run these everytime you restart R ####
+library(psych)
+library(psychTools)
+library(tidyr)
+library(ez)
+
+# environ <- read.file("environment.csv",fileEncoding='UTF-8-BOM')
+# 
+# describeBy(environ$Total.Score, list(environ$Relevance, environ$Framing))
+# 
+# anova_result = ezANOVA(
+#   environ
+#   , dv = .(Total.Score)
+#   , wid = .(P)
+#   , within = NULL # NULL if no within factors
+#   , between = .(Relevance, Framing) # NULL if no between factors
+#   , observed = NULL
+#   , diff = NULL
+#   , reverse_diff = FALSE
+#   , type = 3
+#   , white.adjust = FALSE
+#   , detailed = FALSE
+#   , return_aov = FALSE # TRUE for showing details
+# )
+# print(anova_result)
+
+exp2 <- read.file("2025_Exp2_data.csv",fileEncoding='UTF-8-BOM')
+
+describeBy(exp2$Recognition, list(exp2$Depth, exp2$Stimulus))
+
+anova_result = ezANOVA(
+  exp2
+  , dv = .(Recognition)
+  , wid = .(P)
+  , within = NULL # NULL if no within factors
+  , between = .(Depth, Stimulus) # NULL if no between factors
+  , observed = NULL
+  , diff = NULL
+  , reverse_diff = FALSE
+  , type = 3
+  , white.adjust = FALSE
+  , detailed = FALSE
+  , return_aov = FALSE # TRUE for showing details
+)
+print(anova_result)
+
+just_abstract = subset(exp2, exp2$Stimulus == "abstract")
+t.test(Recognition ~ Depth, just_abstract, var.equal = TRUE)
+
+just_meaningful = subset(exp2, exp2$Stimulus == "meaningful")
+t.test(Recognition ~ Depth, just_meaningful, var.equal = TRUE)
+
+a = aov(Recognition ~ Depth*Stimulus, data = exp2)
+TukeyHSD(a)
+
+## One-sample t-tests for each condition compared to chance performance
+## t.test(subset(exp2, exp2$Depth == "shallow" & exp2$Stimulus == "abstract")$Recognition, 
+##        y=NULL, "greater", 50)
+## t.test(subset(exp2, exp2$Depth == "shallow" & exp2$Stimulus == "meaningful")$Recognition, 
+##        y=NULL, "greater", 50)
+## t.test(subset(exp2, exp2$Depth == "deep" & exp2$Stimulus == "abstract")$Recognition, 
+##        y=NULL, "greater", 50)
+## t.test(subset(exp2, exp2$Depth == "deep" & exp2$Stimulus == "meaningful")$Recognition, 
+##        y=NULL, "greater", 50)
+
